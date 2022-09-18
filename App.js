@@ -1,117 +1,102 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
-import React from 'react';
-import type {Node} from 'react';
+import React, { Component } from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
+  TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
+import Item from './src/Models/Item'
+import ItemComponente from './src/Componentes/ItemComponente';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+export default class App extends Component {
 
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+  constructor(props){
+    super(props)
+    this.state = {
+      nome: '',
+      preco: 0.0,
+      quantidade: 0,
+      lista: []       // vetor     variável declarada como vetor
+    }
+  }
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+  Cadastrar = (nome, preco, quantidade) => {
+    const itemNovo = new Item(nome, preco, quantidade);  // criando um objeto
+    this.state.lista.push(itemNovo);     // adicionando um item no vetor
+  }
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+  render(){
+    return(
+      <ScrollView>
+        <View style={estilo.corpo}>
+          <Text style={estilo.titulo}>CONTROLE DE ESTOQUE</Text>
+          <TextInput onChangeText={(valorDigitado) => {this.setState({nome: valorDigitado})}} style={estilo.entradaTexto}></TextInput>
+          <TextInput onChangeText={(valorDigitado) => {this.setState({preco: valorDigitado})}}style={estilo.entradaTexto}></TextInput>
+          <TextInput onChangeText={(valorDigitado) => {this.setState({quantidade: valorDigitado})}} style={estilo.entradaTexto}></TextInput>          
         </View>
+        <View style={estilo.areaBotao}>
+            <TouchableOpacity 
+              onPress={() => this.Cadastrar(this.state.nome , this.state.preco , this.state.quantidade)}
+              style={estilo.botao}>
+              <Text style={{color: 'white', fontWeight: 'bold'}}>SALVAR</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Lista de item */}
+
+          <View>
+            <Text style={estilo.titulo}>Lista de Itens</Text>
+            {
+              this.state.lista.map( elementoLista => (
+                <ItemComponente>
+                  nome={elementoLista.nome}
+                  preco={elementoLista.preco}
+                  quantidade={elementoLista.quantidade}
+                </ItemComponente>
+              )
+
+              )
+            }
+          </View>
       </ScrollView>
-    </SafeAreaView>
-  );
-};
+    )
+  }
+}
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+const estilo = StyleSheet.create({
+  titulo: {
+    fontSize: 20,
+    margin: 10,
+    color: 'black',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  corpo: {
+    alignItems: 'center',         // alinhamento vertical 'objetos'
+    justifyContent: 'center',     // alinhamento vertical 'objetos'
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  botao: {
+    backgroundColor: 'lightgreen',
+    width: 150,
+    margin: 5,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  highlight: {
-    fontWeight: '700',
+  entradaTexto: {
+    borderWidth: 1,
+    width: 300,               //     largura
+    height: 35,               //    altura
+    margin: 5,                //    margem externa
+    borderColor: 'green',
+    borderRadius: 20,
   },
-});
+  areaBotao: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
 
-export default App;
+  },
+})
