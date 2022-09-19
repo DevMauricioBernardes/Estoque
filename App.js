@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import Item from './src/Models/Item'
 import ItemComponente from './src/Componentes/ItemComponente';
+import ItemDatabase from './src/Database/ItemDatabase';
 
 export default class App extends Component {
 
@@ -22,11 +23,46 @@ export default class App extends Component {
       quantidade: 0,
       lista: []       // vetor     variável declarada como vetor
     }
+    this.Listar();
+  }
+  
+  //                CRUD
+
+  //                READ
+  Listar = () => {
+    const banco = new ItemDatabase();                   // criar o objeto banco
+    banco.Listar() .then(                               // chamar  metodo Lista()
+      listaCompleta => {
+        this.setState({lista: listaCompleta})           // o vetor 'lista' recebe o conteúdo de 'listaCompleta'
+      }
+    )                                    
+
   }
 
+  //              CREATE
   Cadastrar = (nome, preco, quantidade) => {
     const itemNovo = new Item(nome, preco, quantidade);  // criando um objeto
-    this.state.lista.push(itemNovo);     // adicionando um item no vetor
+    const banco = new ItemDatabase();                   // criando objeto 'banco'
+    banco.Inserir(itemNovo);                            // cadastra no banco
+    this.Listar();
+    //this.state.lista.push(itemNovo);     // adicionando um item no vetor
+    //this.forceUpdate();                   //  atualiza a lista  // adiciona itens
+  }
+
+  //              UPDATE
+  Atualizar = (item) => {      
+    const banco = new ItemDatabase();    
+    banco.Atualizar(item);
+    this.Listar();
+
+  }
+
+  //            DELETE
+  Remover = (id) => {
+    const banco = new ItemDatabase();
+    banco.Remover(id);
+    this.Listar();
+
   }
 
   render(){
@@ -52,14 +88,15 @@ export default class App extends Component {
             <Text style={estilo.titulo}>Lista de Itens</Text>
             {
               this.state.lista.map( elementoLista => (
-                <ItemComponente>
-                  nome={elementoLista.nome}
-                  preco={elementoLista.preco}
-                  quantidade={elementoLista.quantidade}
-                </ItemComponente>
-              )
-
-              )
+                <ItemComponente                 
+                id={elementoLista.id}
+                item={elementoLista}
+                nome={elementoLista.nome}
+                preco={elementoLista.preco}
+                quantidade={elementoLista.quantidade} 
+                atualizar={this.Atualizar}
+                remover={this.Remover}/>   
+              ))
             }
           </View>
       </ScrollView>
